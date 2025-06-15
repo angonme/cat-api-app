@@ -31,3 +31,22 @@ e.Manual com prints dos Logs (item 6) e os 3 Dashboards (item 7)
 
 9.Recomendado a utilização do docker (http://www.docker.com) para montagem do ambiente, mas fique à vontade para usar outras alternativas.
 5.1 Caso opte pela utilização do docker, publique os Dockerfiles no repositório do projeto ou deixe a imagem publicada no Dockerhub.
+
+O que você já tem pronto:
+Item	Status
+Aplicação Java com Spring Boot	✅ Pronta
+Banco de dados H2 em memória	✅ Pronto
+Consumo da API TheCatAPI	✅ Pronto
+APIs REST documentadas	✅ Pronto
+Métricas com Prometheus	✅ Pronto
+Dashboard com Grafana	✅ Pronto
+Logs preparados para Splunk	✅ Pronto
+Docker e Docker Compose	✅ Pronto
+Insomnia Collection	✅ Pronto
+Publicação no GitHub	✅ Finalizada
+
+🧪 Próximos passos (opcional):
+Testar as APIs com o Insomnia
+Importar o JSON do Grafana
+Configurar Splunk com a query sugerida
+Publicar a imagem no Docker Hub
