@@ -1,0 +1,75 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2025-06-15T00:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v8.0.0",
+  "resources": [
+    {
+      "_id": "wrk_1",
+      "created": 1620000000000,
+      "description": "Cole\u00e7\u00e3o para API de Gatos",
+      "modified": 1620000000000,
+      "name": "API Gatos",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_1",
+      "created": 1620000000000,
+      "modified": 1620000000000,
+      "name": "Base Environment",
+      "parentId": "wrk_1",
+      "data": {
+        "base_url": "http://localhost:8080"
+      },
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_1",
+      "created": 1620000000000,
+      "modified": 1620000000000,
+      "name": "Ra\u00e7as",
+      "parentId": "wrk_1",
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_1",
+      "created": 1620000000000,
+      "modified": 1620000000000,
+      "url": "{{ base_url }}/racas",
+      "name": "Listar todas as ra\u00e7as",
+      "method": "GET",
+      "parentId": "fld_1",
+      "_type": "request"
+    },
+    {
+      "_id": "req_2",
+      "created": 1620000000000,
+      "modified": 1620000000000,
+      "url": "{{ base_url }}/racas/{id}",
+      "name": "Buscar ra\u00e7a por ID",
+      "method": "GET",
+      "parentId": "fld_1",
+      "_type": "request"
+    },
+    {
+      "_id": "req_3",
+      "created": 1620000000000,
+      "modified": 1620000000000,
+      "url": "{{ base_url }}/racas/temperamento/{temp}",
+      "name": "Buscar ra\u00e7as por temperamento",
+      "method": "GET",
+      "parentId": "fld_1",
+      "_type": "request"
+    },
+    {
+      "_id": "req_4",
+      "created": 1620000000000,
+      "modified": 1620000000000,
+      "url": "{{ base_url }}/racas/origem/{origem}",
+      "name": "Buscar ra\u00e7as por origem",
+      "method": "GET",
+      "parentId": "fld_1",
+      "_type": "request"
+    }
+  ]
+}

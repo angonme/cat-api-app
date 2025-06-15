@@ -1,0 +1,9 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" ...> <!-- Simplificado -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.exemplo</groupId>
+    <artifactId>cat-api-app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <dependencies>
+        <!-- Spring Boot Starter Web, Data JPA, H2, Actuator, Micrometer, Lombok -->
+    </dependencies>
+</project>

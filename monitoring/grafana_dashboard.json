@@ -1,0 +1,49 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "catapi-dashboard",
+    "title": "Cat API Dashboard",
+    "timezone": "browser",
+    "schemaVersion": 26,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "type": "graph",
+        "title": "Total de Requisi\u00e7\u00f5es",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count[1m])",
+            "legendFormat": "{{method}} {{uri}}",
+            "interval": ""
+          }
+        ],
+        "id": 1
+      },
+      {
+        "type": "graph",
+        "title": "Lat\u00eancia (ms)",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_sum[1m]) / rate(http_server_requests_seconds_count[1m])",
+            "legendFormat": "lat\u00eancia m\u00e9dia",
+            "interval": ""
+          }
+        ],
+        "id": 2
+      },
+      {
+        "type": "graph",
+        "title": "Erros 4xx e 5xx",
+        "targets": [
+          {
+            "expr": "rate(http_server_requests_seconds_count{status=~\"4..|5..\"}[1m])",
+            "legendFormat": "erros",
+            "interval": ""
+          }
+        ],
+        "id": 3
+      }
+    ]
+  }
+}
