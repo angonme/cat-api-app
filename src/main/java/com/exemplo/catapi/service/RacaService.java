@@ -18,7 +18,7 @@ public class RacaService {
         return racaRepository.findAll();
     }
 
-    public Raca buscarPorId(String id) {
+    public Raca buscarPorId(Long id) {
         return racaRepository.findById(id).orElse(null);
     }
 

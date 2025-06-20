@@ -1,0 +1,10 @@
+com\exemplo\catapi\service\ColetaService$RacaResposta.class
+com\exemplo\catapi\repository\RacaRepository.class
+com\exemplo\catapi\repository\ImagemRepository.class
+com\exemplo\catapi\service\ColetaService.class
+com\exemplo\catapi\controller\RacaController.class
+com\exemplo\catapi\model\Imagem.class
+com\exemplo\catapi\model\Raca.class
+com\exemplo\catapi\CatApiApp.class
+com\exemplo\catapi\service\ColetaService$ImagemResposta.class
+com\exemplo\catapi\service\RacaService.class

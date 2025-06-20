@@ -5,69 +5,104 @@ import com.exemplo.catapi.model.Raca;
 import com.exemplo.catapi.repository.ImagemRepository;
 import com.exemplo.catapi.repository.RacaRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class ColetaService {
 
     private final RacaRepository racaRepository;
     private final ImagemRepository imagemRepository;
+    private final RestTemplate restTemplate = new RestTemplate();
 
-    public ColetaService(RacaRepository racaRepository, ImagemRepository imagemRepository) {
-        this.racaRepository = racaRepository;
-        this.imagemRepository = imagemRepository;
-    }
+    private final String BASE_URL = "https://api.thecatapi.com/v1";
 
     @PostConstruct
-    public void init() {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://api.thecatapi.com/v1/breeds";
+    public void coletarDados() {
+        // a. Coletar raças
+        RacaResposta[] racas = restTemplate.getForObject(BASE_URL + "/breeds", RacaResposta[].class);
 
-        Raca[] racas = restTemplate.getForObject(url, Raca[].class);
         if (racas != null) {
-            for (Raca r : racas) {
-                if (r.getId() != null) {
-                    racaRepository.save(r);
+            for (RacaResposta racaApi : racas) {
+                Raca novaRaca = new Raca();
+                novaRaca.setNome(racaApi.getName());
+                novaRaca.setOrigem(racaApi.getOrigin());
+                novaRaca.setTemperamento(racaApi.getTemperament());
+                novaRaca.setDescricao(racaApi.getDescription());
 
-                    for (int i = 0; i < 3; i++) {
-                        String imageUrl = "https://api.thecatapi.com/v1/images/search?breed_id=" + r.getId();
-                        Map[] images = restTemplate.getForObject(imageUrl, Map[].class);
-                        if (images != null && images.length > 0 && images[0].get("url") != null) {
-                            Imagem img = new Imagem();
-                            img.setUrl(images[0].get("url").toString());
-                            img.setTipo("geral");
-                            img.setRaca(r);
-                            imagemRepository.save(img);
-                        }
+                Raca salva = racaRepository.save(novaRaca);
+
+                // b. Coletar 3 imagens para cada raça
+                String urlImagens = BASE_URL + "/images/search?limit=3&breed_id=" + racaApi.getId();
+                ImagemResposta[] imagens = restTemplate.getForObject(urlImagens, ImagemResposta[].class);
+                if (imagens != null) {
+                    for (ImagemResposta img : imagens) {
+                        Imagem imagem = new Imagem();
+                        imagem.setUrl(img.getUrl());
+                        imagem.setTipo("raca");
+                        imagem.setRaca(salva);
+                        imagemRepository.save(imagem);
                     }
                 }
             }
         }
 
-        coletarImagensTematicas("hat", "chapeu", restTemplate);
-        coletarImagensTematicas("sunglasses", "oculos", restTemplate);
+        // c. 3 imagens de gatos com chapéu
+        salvarImagensPorCategoria("1", "chapéu");
+
+        // d. 3 imagens de gatos com óculos
+        salvarImagensPorCategoria("4", "óculos");
     }
 
-    private void coletarImagensTematicas(String categoria, String tipo, RestTemplate restTemplate) {
-        String url = UriComponentsBuilder.fromHttpUrl("https://api.thecatapi.com/v1/images/search")
-                .queryParam("category_ids", categoria)
-                .queryParam("limit", 3)
-                .toUriString();
-
-        Map[] imagens = restTemplate.getForObject(url, Map[].class);
+    private void salvarImagensPorCategoria(String categoriaId, String tipo) {
+        String url = BASE_URL + "/images/search?limit=3&category_ids=" + categoriaId;
+        ImagemResposta[] imagens = restTemplate.getForObject(url, ImagemResposta[].class);
         if (imagens != null) {
-            for (Map imgMap : imagens) {
-                if (imgMap.get("url") != null) {
-                    Imagem img = new Imagem();
-                    img.setUrl(imgMap.get("url").toString());
-                    img.setTipo(tipo);
-                    imagemRepository.save(img);
-                }
+            for (ImagemResposta img : imagens) {
+                Imagem imagem = new Imagem();
+                imagem.setUrl(img.getUrl());
+                imagem.setTipo(tipo);
+                imagemRepository.save(imagem);
             }
         }
+    }
+
+    // Classe auxiliar interna para mapear resposta da API de imagem
+    private static class ImagemResposta {
+        private String url;
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    }
+
+    // Classe auxiliar interna para mapear resposta da API de raça
+    private static class RacaResposta {
+        private String id;
+        private String name;
+        private String origin;
+        private String temperament;
+        private String description;
+
+        public String getId() { return id; }
+        public void setId(String id) { this.id = id; }
+
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+
+        public String getOrigin() { return origin; }
+        public void setOrigin(String origin) { this.origin = origin; }
+
+        public String getTemperament() { return temperament; }
+        public void setTemperament(String temperament) { this.temperament = temperament; }
+
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
     }
 }
