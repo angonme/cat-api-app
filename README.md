@@ -8,10 +8,19 @@ Aplicação Java Spring Boot que consome a [The Cat API](https://thecatapi.com/)
 - Spring Boot
 - Spring Data JPA
 - Banco de dados em memória H2
-- Docker e Docker Compose
 - Prometheus + Grafana
 - Splunk (Logs)
 - Insomnia (testes de API)
+  
+- Ferramentas de Qualidade Itaú:
+- SonarQube (análise estática, cobertura de testes)
+- TAAC (Test as a Code – automação de testes)
+- Hopper (gestão e execução de testes manuais)
+- Qualifier (execução de suítes automatizadas)
+- Performance4ALL (testes de performance)
+- IU Chaos (testes de resiliência)
+- IU Pipes/GitHub Actions (pipelines CI/CD para testes)
+- IU Quali (gerenciamento de testes automatizados)
 
 ## 🚀 Como rodar o projeto localmente
 
@@ -19,29 +28,48 @@ Aplicação Java Spring Boot que consome a [The Cat API](https://thecatapi.com/)
 
 - Java 17+
 - Maven
-- Docker e Docker Compose (opcional)
+- IntelliJ IDEA (ou outra IDE Java)
 - Insomnia
 
-### 2. Rodando com Docker (recomendado)
+### 2. Rodando localmente pelo IntelliJ IDEA (recomendado)
 
-```bash
-docker-compose up --build
-```
-
-A aplicação estará disponível em `http://localhost:8080`.
+Clone o repositório:
+comando: git clone https://github.com/angonme/cat-api-app.git
+Abra o projeto no IntelliJ IDEA.
+Aguarde o carregamento do Maven e do projeto.
+Localize a classe principal (CatApiApp.java) e execute como aplicação Spring Boot (botão verde "Run" na IDE).
+A aplicação estará disponível em http://localhost:8080.
 
 Acesse:
 - H2 Console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:testdb`)
 - Prometheus: `http://localhost:9090`
 - Grafana: `http://localhost:3000` (usuário/senha: `admin/admin`)
 
-### 3. Rodando localmente sem Docker
+### 3. Ferramentas de Teste e Qualidade disponíveis no Itaú
 
-```bash
-mvn spring-boot:run
-```
+Testes Unitários e Regressivos
+SonarQube: Análise de cobertura e qualidade de código. Integre na pipeline para garantir padrões e detectar falhas.
+TAAC: Criação e execução de testes automatizados versionados junto ao código.
+Qualifier: Execução de suítes de testes automatizados em diferentes ambientes.
+IU Pipes/GitHub Actions: Orquestração automática de testes em CI/CD.
 
----
+Testes Manuais
+Hopper: Gestão e execução de casos de teste manuais, com rastreabilidade, evidências e documentação.
+
+Testes Integrados
+TAAC/Qualifier: Suporte a testes de integração automatizados.
+IU Quali: Gerenciamento de execuções de testes integrados.
+
+Testes de Performance
+Performance4ALL: Criação e execução de scripts de performance (JMeter), com integração ao Grafana para análise de resultados.
+Grafana/Prometheus: Monitoramento de métricas de performance em tempo real.
+
+Testes de Resiliência
+IU Chaos: Simulação de falhas e validação da resiliência da aplicação.
+
+Observabilidade e Logs
+Splunk: Centralização e análise de logs para troubleshooting e auditoria.
+Grafana/Prometheus: Dashboards para acompanhamento de métricas técnicas e de negócio.
 
 ## 📚 Documentação das APIs
 
@@ -116,23 +144,6 @@ cat-api-app/
 
 ---
 
-## 🐳 Docker Hub (Opcional)
-
-Caso deseje, pode publicar sua imagem:
-
-```bash
-docker build -t seu-usuario/cat-api-app .
-docker push seu-usuario/cat-api-app
-```
-
----
-
-## ✅ Prints dos dashboards e logs (manual do projeto)
-
-**Inclua prints aqui dos painéis Grafana e logs Splunk.**
-
----
-
 ## 👨‍💻 Autor
 
 Anderson Mendes
@@ -148,48 +159,6 @@ Anderson Mendes
 5. Selecione o arquivo `grafana_dashboard_catapi.json` incluído no projeto
 6. Escolha o datasource `Prometheus` e clique em **Import**
 
-Ou [clique aqui para baixar o painel diretamente](./grafana_dashboard_catapi.json).
-
 ---
 
-## 🐙 Publicação no GitHub
-
-1. Crie um repositório no GitHub
-2. Faça push do conteúdo extraído do ZIP:
-
-```bash
-git init
-git remote add origin https://github.com/seu-usuario/cat-api-app.git
-git add .
-git commit -m "Projeto Cat API completo"
-git push -u origin master
-```
-
----
-
-## 🐳 Publicar imagem no Docker Hub
-
-1. Faça login no Docker Hub:
-```bash
-docker login
-```
-
-2. Crie a imagem:
-```bash
-docker build -t seu-usuario/cat-api-app .
-```
-
-3. Envie para o Docker Hub:
-```bash
-docker push seu-usuario/cat-api-app
-```
-
-Depois poderá rodar com:
-
-```bash
-docker run -p 8080:8080 seu-usuario/cat-api-app
-```
-
----
-
-✅ Projeto pronto para produção, testes, monitoramento e publicação!
+✅ Projeto Finalizado.
