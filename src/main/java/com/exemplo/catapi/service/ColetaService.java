@@ -4,105 +4,126 @@ import com.exemplo.catapi.model.Imagem;
 import com.exemplo.catapi.model.Raca;
 import com.exemplo.catapi.repository.ImagemRepository;
 import com.exemplo.catapi.repository.RacaRepository;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import jakarta.annotation.PostConstruct;
+import java.util.List;
+
 @Service
-@RequiredArgsConstructor
 public class ColetaService {
 
     private final RacaRepository racaRepository;
     private final ImagemRepository imagemRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final String BASE_URL = "https://api.thecatapi.com/v1";
+    public ColetaService(RacaRepository racaRepository, ImagemRepository imagemRepository) {
+        this.racaRepository = racaRepository;
+        this.imagemRepository = imagemRepository;
+    }
 
     @PostConstruct
     public void coletarDados() {
-        // a. Coletar raças
-        RacaResposta[] racas = restTemplate.getForObject(BASE_URL + "/breeds", RacaResposta[].class);
+        String resposta = chamarAPIComRetentativa("https://api.thecatapi.com/v1/breeds", 3, 10);
+        if (resposta == null) return; // aborta se não conseguiu resposta
 
-        if (racas != null) {
-            for (RacaResposta racaApi : racas) {
-                Raca novaRaca = new Raca();
-                novaRaca.setNome(racaApi.getName());
-                novaRaca.setOrigem(racaApi.getOrigin());
-                novaRaca.setTemperamento(racaApi.getTemperament());
-                novaRaca.setDescricao(racaApi.getDescription());
+        try {
+            JsonNode racasJson = objectMapper.readTree(resposta);
+            for (JsonNode racaJson : racasJson) {
+                String nome = racaJson.path("name").asText();
+                String origem = racaJson.path("origin").asText();
+                String temperamento = racaJson.path("temperament").asText();
+                String descricao = racaJson.path("description").asText();
 
-                Raca salva = racaRepository.save(novaRaca);
+                Raca raca = new Raca();
+                raca.setNome(nome);
+                raca.setOrigem(origem);
+                raca.setTemperamento(temperamento);
+                raca.setDescricao(descricao.length() > 1000 ? descricao.substring(0, 1000) : descricao);
+                racaRepository.save(raca);
 
-                // b. Coletar 3 imagens para cada raça
-                String urlImagens = BASE_URL + "/images/search?limit=3&breed_id=" + racaApi.getId();
-                ImagemResposta[] imagens = restTemplate.getForObject(urlImagens, ImagemResposta[].class);
-                if (imagens != null) {
-                    for (ImagemResposta img : imagens) {
-                        Imagem imagem = new Imagem();
-                        imagem.setUrl(img.getUrl());
-                        imagem.setTipo("raca");
-                        imagem.setRaca(salva);
-                        imagemRepository.save(imagem);
-                    }
+                String racaId = racaJson.path("id").asText();
+                String imagensJson = chamarAPIComRetentativa("https://api.thecatapi.com/v1/images/search?limit=3&breed_id=" + racaId, 3, 10);
+                if (imagensJson == null) continue;
+
+                JsonNode imagensArray = objectMapper.readTree(imagensJson);
+                for (JsonNode imagemJson : imagensArray) {
+                    String url = imagemJson.path("url").asText();
+                    Imagem imagem = new Imagem();
+                    imagem.setRaca(raca);
+                    imagem.setUrl(url);
+                    imagem.setTipo("RAÇA");
+                    imagemRepository.save(imagem);
                 }
             }
+
+            // Salvar imagens de gatos com chapéu
+            salvarImagensPorCategoria("hat", "CHAPÉU");
+
+            // Salvar imagens de gatos com óculos
+            salvarImagensPorCategoria("glasses", "ÓCULOS");
+
+        } catch (Exception e) {
+            System.out.println("Erro ao processar dados: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        // c. 3 imagens de gatos com chapéu
-        salvarImagensPorCategoria("1", "chapéu");
-
-        // d. 3 imagens de gatos com óculos
-        salvarImagensPorCategoria("4", "óculos");
     }
 
-    private void salvarImagensPorCategoria(String categoriaId, String tipo) {
-        String url = BASE_URL + "/images/search?limit=3&category_ids=" + categoriaId;
-        ImagemResposta[] imagens = restTemplate.getForObject(url, ImagemResposta[].class);
-        if (imagens != null) {
-            for (ImagemResposta img : imagens) {
+    private void salvarImagensPorCategoria(String categoria, String tipo) {
+        String url = "https://api.thecatapi.com/v1/images/search?limit=3&category_ids=" + buscarIdCategoria(categoria);
+        String resposta = chamarAPIComRetentativa(url, 3, 10);
+        if (resposta == null) return;
+
+        try {
+            JsonNode imagensArray = objectMapper.readTree(resposta);
+            for (JsonNode imagemJson : imagensArray) {
+                String urlImagem = imagemJson.path("url").asText();
                 Imagem imagem = new Imagem();
-                imagem.setUrl(img.getUrl());
+                imagem.setUrl(urlImagem);
                 imagem.setTipo(tipo);
                 imagemRepository.save(imagem);
             }
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar imagens de categoria " + tipo + ": " + e.getMessage());
         }
     }
 
-    // Classe auxiliar interna para mapear resposta da API de imagem
-    private static class ImagemResposta {
-        private String url;
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
+    // Troca switch por if-else
+    private String buscarIdCategoria(String categoria) {
+        if ("hat".equalsIgnoreCase(categoria)) {
+            return "1";
+        } else if ("glasses".equalsIgnoreCase(categoria)) {
+            return "4";
+        } else {
+            return "0";
         }
     }
 
-    // Classe auxiliar interna para mapear resposta da API de raça
-    private static class RacaResposta {
-        private String id;
-        private String name;
-        private String origin;
-        private String temperament;
-        private String description;
+    private String chamarAPIComRetentativa(String url, int tentativas, int esperaSegundos) {
+        RestTemplate restTemplate = new RestTemplate();
 
-        public String getId() { return id; }
-        public void setId(String id) { this.id = id; }
+        for (int i = 1; i <= tentativas; i++) {
+            try {
+                return restTemplate.getForObject(url, String.class);
+            } catch (HttpClientErrorException.TooManyRequests e) {
+                System.out.println("Limite de requisições atingido (tentativa " + i + "/" + tentativas + "). Aguardando " + esperaSegundos + "s...");
+                try {
+                    Thread.sleep(esperaSegundos * 1000L);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                    return null;
+                }
+            } catch (Exception e) {
+                System.out.println("Erro ao chamar API: " + e.getMessage());
+                return null;
+            }
+        }
 
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
-
-        public String getOrigin() { return origin; }
-        public void setOrigin(String origin) { this.origin = origin; }
-
-        public String getTemperament() { return temperament; }
-        public void setTemperament(String temperament) { this.temperament = temperament; }
-
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
+        System.out.println("Tentativas esgotadas. Não foi possível coletar os dados da API.");
+        return null;
     }
 }

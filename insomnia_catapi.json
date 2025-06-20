@@ -1,75 +1,74 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2025-06-15T00:00:00.000Z",
-  "__export_source": "insomnia.desktop.app:v8.0.0",
+  "__export_date": "2025-06-15T18:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2025.1.0",
   "resources": [
     {
-      "_id": "wrk_1",
-      "created": 1620000000000,
-      "description": "Cole\u00e7\u00e3o para API de Gatos",
-      "modified": 1620000000000,
-      "name": "API Gatos",
+      "_id": "wrk_123catapi",
+      "name": "Cat API App",
       "_type": "workspace"
     },
     {
-      "_id": "env_1",
-      "created": 1620000000000,
-      "modified": 1620000000000,
+      "_id": "env_123catapi",
+      "parentId": "wrk_123catapi",
+      "_type": "environment",
       "name": "Base Environment",
-      "parentId": "wrk_1",
       "data": {
-        "base_url": "http://localhost:8080"
-      },
-      "_type": "environment"
+        "base_url": "http://localhost:8080/api"
+      }
     },
     {
-      "_id": "fld_1",
-      "created": 1620000000000,
-      "modified": 1620000000000,
-      "name": "Ra\u00e7as",
-      "parentId": "wrk_1",
-      "_type": "request_group"
-    },
-    {
-      "_id": "req_1",
-      "created": 1620000000000,
-      "modified": 1620000000000,
+      "_id": "req_001_racas",
+      "parentId": "wrk_123catapi",
+      "_type": "request",
+      "name": "Listar todas as raças",
+      "method": "GET",
       "url": "{{ base_url }}/racas",
-      "name": "Listar todas as ra\u00e7as",
-      "method": "GET",
-      "parentId": "fld_1",
-      "_type": "request"
+      "headers": [],
+      "body": {},
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -1000000000
     },
     {
-      "_id": "req_2",
-      "created": 1620000000000,
-      "modified": 1620000000000,
-      "url": "{{ base_url }}/racas/{id}",
-      "name": "Buscar ra\u00e7a por ID",
+      "_id": "req_002_uma_raca",
+      "parentId": "wrk_123catapi",
+      "_type": "request",
+      "name": "Buscar raça por ID",
       "method": "GET",
-      "parentId": "fld_1",
-      "_type": "request"
+      "url": "{{ base_url }}/racas/1",
+      "headers": [],
+      "body": {},
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -900000000
     },
     {
-      "_id": "req_3",
-      "created": 1620000000000,
-      "modified": 1620000000000,
-      "url": "{{ base_url }}/racas/temperamento/{temp}",
-      "name": "Buscar ra\u00e7as por temperamento",
+      "_id": "req_003_temperamento",
+      "parentId": "wrk_123catapi",
+      "_type": "request",
+      "name": "Buscar raças por temperamento",
       "method": "GET",
-      "parentId": "fld_1",
-      "_type": "request"
+      "url": "{{ base_url }}/racas/temperamento/Dócil",
+      "headers": [],
+      "body": {},
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -800000000
     },
     {
-      "_id": "req_4",
-      "created": 1620000000000,
-      "modified": 1620000000000,
-      "url": "{{ base_url }}/racas/origem/{origem}",
-      "name": "Buscar ra\u00e7as por origem",
+      "_id": "req_004_origem",
+      "parentId": "wrk_123catapi",
+      "_type": "request",
+      "name": "Buscar raças por origem",
       "method": "GET",
-      "parentId": "fld_1",
-      "_type": "request"
+      "url": "{{ base_url }}/racas/origem/Egito",
+      "headers": [],
+      "body": {},
+      "parameters": [],
+      "authentication": {},
+      "metaSortKey": -700000000
     }
   ]
 }
