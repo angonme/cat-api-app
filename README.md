@@ -1,5 +1,4 @@
-
-# Cat API App 🐱
+# Cat API App
 
 Aplicação Java Spring Boot que consome a [The Cat API](https://thecatapi.com/) para coletar informações de raças de gatos, salvar imagens e expor APIs REST com métricas.
 
